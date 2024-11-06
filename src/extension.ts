@@ -14,8 +14,8 @@ let outputChannel: vscode.OutputChannel;
 export function activate(context: vscode.ExtensionContext) {
   // Crear el ítem de la barra de estado
   statusBarItem = vscode.window.createStatusBarItem(
-    vscode.StatusBarAlignment.Right,
-    100
+    vscode.StatusBarAlignment.Left,
+    0
   );
   statusBarItem.text = '$(eye-closed) Watch';
   statusBarItem.command = 'extension.toggleWatch';
