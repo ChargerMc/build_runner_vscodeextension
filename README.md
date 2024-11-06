@@ -1,3 +1,5 @@
+![Dart Build Runner Watch Icon](icon.png)
+
 [![Visual Studio Marketplace Version](https://img.shields.io/visual-studio-marketplace/v/ChargerDevs.vscode-dart-build-runner-watch.svg?label=VS%20Code%20Marketplace&logo=visual-studio-code)](https://marketplace.visualstudio.com/items?itemName=ChargerDevs.vscode-dart-build-runner-watch)
 
 # Dart Build Runner Watch - VS Code Extension
