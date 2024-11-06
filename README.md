@@ -20,7 +20,7 @@ A Visual Studio Code extension to run `dart run build_runner watch` for Dart pro
 ## Installation
 
 1. Install Dart and Flutter SDKs.
-2. Install the extension from the [Visual Studio Code Marketplace](https://marketplace.visualstudio.com/).
+2. Install the extension from the [Visual Studio Code Marketplace](https://marketplace.visualstudio.com/items?itemName=ChargerDevs.dart-build-runner-watch).
 
 ## Usage
 
