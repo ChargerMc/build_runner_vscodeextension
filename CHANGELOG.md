@@ -2,6 +2,12 @@
 
 All notable changes to this extension will be documented in this file.
 
+## [1.0.1] - 2024-11-06
+
+### Changed
+
+- Extension name and icon, updated.
+
 ## [1.0.0] - 2024-11-05
 
 ### Added

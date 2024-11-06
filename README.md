@@ -1,8 +1,8 @@
-![Dart Build Runner Watch Icon](icon.png)
+![Dart build_runner watch Icon](icon.png)
 
 [![Visual Studio Marketplace Version](https://img.shields.io/visual-studio-marketplace/v/ChargerDevs.dart-build-runner-watch.svg?label=VS%20Code%20Marketplace&logo=visual-studio-code)](https://marketplace.visualstudio.com/items?itemName=ChargerDevs.dart-build-runner-watch)
 
-# Dart Build Runner Watch - VS Code Extension
+# Dart build_runner watch - VS Code Extension
 
 A Visual Studio Code extension to run `dart run build_runner watch` for Dart projects.
 
