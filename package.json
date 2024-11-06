@@ -1,0 +1,57 @@
+{
+  "name": "dart-build-runner-watch",
+  "displayName": "Dart Build Runner Watch",
+  "description": "VSCode extension to run 'dart run build_runner watch' for Dart projects.",
+  "version": "1.0.0",
+  "publisher": "ChargerDevs",
+  "icon": "icon.png",
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.60.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onLanguage:dart"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "extension.toggleWatch",
+        "title": "Toggle Build Runner Watch"
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "tsc -p ./",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./"
+  },
+  "devDependencies": {
+    "@types/node": "^20.17.6",
+    "@types/vscode": "^1.95.0",
+    "typescript": "^5.2.2"
+  },
+  "dependencies": {
+    "tree-kill": "^1.2.2",
+    "vscode-nls": "^5.2.0"
+  },
+  "extensionKind": [
+    "workspace",
+    "ui"
+  ],
+  "localization": {
+    "default": "i18n/package.nls.json",
+    "es": "i18n/package.nls.es.json"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tu-usuario/vscode-dart-build-runner-watch.git"
+  },
+  "bugs": {
+    "url": "https://github.com/tu-usuario/vscode-dart-build-runner-watch/issues"
+  },
+  "homepage": "https://github.com/tu-usuario/vscode-dart-build-runner-watch#readme"
+}

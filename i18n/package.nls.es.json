@@ -1,0 +1,12 @@
+{
+  "extension.toggleWatch.tooltip.start": "Iniciar build_runner watch",
+  "extension.toggleWatch.tooltip.stop": "Detener build_runner watch",
+  "extension.outputChannel": "Dart Build Runner Watch",
+  "extension.startMessage": "Build runner watch iniciado.",
+  "extension.stopMessage": "Build runner watch detenido.",
+  "extension.errorStopMessage": "Build runner watch se detuvo inesperadamente con código {0}.",
+  "extension.noDartProjectMessage": "No se detectó un proyecto Dart en el directorio actual.",
+  "extension.flutterSdkRequiredMessage": "Flutter SDK es requerido para ejecutar el comando.",
+  "extension.enterFlutterSdkPath": "Ingresa la ruta del Flutter SDK",
+  "extension.sdkPromptMessage": "No se pudo encontrar Flutter SDK. Por favor, ingresa su ruta de instalación."
+}
