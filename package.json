@@ -9,6 +9,14 @@
   "engines": {
     "vscode": "^1.95.0"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ChargerMc/build_runner_vscodeextension.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ChargerMc/build_runner_vscodeextension/issues"
+  },
+  "homepage": "https://github.com/ChargerMc/build_runner_vscodeextension#readme",
   "categories": [
     "Other"
   ],
@@ -45,13 +53,5 @@
   "localization": {
     "default": "i18n/package.nls.json",
     "es": "i18n/package.nls.es.json"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/tu-usuario/vscode-dart-build-runner-watch.git"
-  },
-  "bugs": {
-    "url": "https://github.com/tu-usuario/vscode-dart-build-runner-watch/issues"
-  },
-  "homepage": "https://github.com/tu-usuario/vscode-dart-build-runner-watch#readme"
+  }
 }
