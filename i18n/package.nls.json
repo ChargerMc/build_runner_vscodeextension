@@ -8,5 +8,9 @@
   "extension.noDartProjectMessage": "No Dart project detected in the current directory.",
   "extension.flutterSdkRequiredMessage": "Flutter SDK is required to run this command.",
   "extension.enterFlutterSdkPath": "Enter the Flutter SDK path",
-  "extension.sdkPromptMessage": "Flutter SDK not found. Please enter its installation path."
+  "extension.sdkPromptMessage": "Flutter SDK not found. Please enter its installation path.",
+  "extension.restartMessage": "Build runner watch restarted.",
+  "extension.buildSuccessMessage": "Build completed.",
+  "extension.buildErrorMessage": "Build failed with code {0}.",
+  "extension.noActiveFileMessage": "No active file to build."
 }

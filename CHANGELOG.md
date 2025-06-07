@@ -2,6 +2,19 @@
 
 All notable changes to this extension will be documented in this file.
 
+## [1.2.0] - 2024-11-08
+
+### Added
+
+- **Keyboard Shortcuts**: Use `Ctrl+Shift+B`/`Cmd+Shift+B` to start or stop the watcher.
+- **Filtered Build Command**: Rebuild only the active file with `Ctrl+Alt+B`/`Cmd+Alt+B`.
+
+## [1.1.0] - 2024-11-07
+
+### Added
+
+- **Automatic Restart**: The watcher now automatically restarts if it stops unexpectedly, such as after running `pub get`.
+
 ## [1.0.1] - 2024-11-06
 
 ### Changed
