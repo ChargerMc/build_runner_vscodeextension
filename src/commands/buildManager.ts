@@ -64,6 +64,7 @@ export class BuildManager {
       relativePath = relativePath.replace(/\\/g, "/");
     }
 
+
     const command = process.platform === 'win32' ? 'cmd' : 'dart';
     const args =
       process.platform === 'win32'
