@@ -2,7 +2,7 @@
   "name": "dart-build-runner-watch",
   "displayName": "Dart build_runner watch",
   "description": "VSCode extension to run 'dart run build_runner watch' for Dart projects.",
-  "version": "1.0.1",
+  "version": "1.2.0",
   "publisher": "ChargerDevs",
   "icon": "icon.png",
   "license": "MIT",
@@ -29,6 +29,24 @@
       {
         "command": "extension.toggleWatch",
         "title": "Toggle Build Runner Watch"
+      },
+      {
+        "command": "extension.buildSelected",
+        "title": "Build Selected File"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "extension.toggleWatch",
+        "key": "ctrl+shift+b",
+        "mac": "cmd+shift+b",
+        "when": "editorTextFocus && resourceLangId == 'dart'"
+      },
+      {
+        "command": "extension.buildSelected",
+        "key": "ctrl+alt+b",
+        "mac": "cmd+alt+b",
+        "when": "editorTextFocus && resourceLangId == 'dart'"
       }
     ]
   },
