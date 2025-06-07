@@ -106,11 +106,9 @@ export class BuildManager {
     this.outputChannel.appendLine('');
 
     if (existingFilters.length === 0) {
-      this.outputChannel.appendLine(`[build_runner]: No existing generated files found. Will attempt to generate:`);
-      potentialFilters.forEach(filter => {
-        this.outputChannel.appendLine(`  → ${filter}`);
-      });
-      this.outputChannel.appendLine('');
+      this.outputChannel.appendLine(`[build_runner]: No existing generated files found.`);
+      this.outputChannel.appendLine(`[build_runner]: Exited. No build filters applied.`);
+      return;
     }
 
     this.outputChannel.appendLine(`[build_runner]: Using build filters:`);
