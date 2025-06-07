@@ -9,6 +9,7 @@ All notable changes to this extension will be documented in this file.
 - **Keyboard Shortcuts**: Use `Ctrl+Shift+B`/`Cmd+Shift+B` to start or stop the watcher.
 - **Filtered Build Command**: Rebuild only the active file with `Ctrl+Alt+B`/`Cmd+Alt+B`.
 - **Automatic Restart**: The watcher now automatically restarts if it stops unexpectedly, such as after running `pub get`.
+- **Refactor Code**: The project has been refactored.
 
 ## [1.0.1] - 2024-11-06
 
