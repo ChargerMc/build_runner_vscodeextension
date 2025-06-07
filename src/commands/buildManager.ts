@@ -21,20 +21,21 @@ export class BuildManager {
   }
 
   public async buildSelectedFile(): Promise<void> {
-    if (!isDartProject()) {
+    const editor = vscode.window.activeTextEditor;
+    if (!editor) {
+      vscode.window.showErrorMessage(
+        localize('extension.noActiveFileMessage', 'No active file to build.')
+      );
+      return;
+    }
+
+    const workspaceFolder = vscode.workspace.getWorkspaceFolder(editor.document.uri);
+    if (!workspaceFolder || !isDartProject(workspaceFolder.uri)) {
       vscode.window.showErrorMessage(
         localize(
           'extension.noDartProjectMessage',
           'No Dart project detected in the current directory.'
         )
-      );
-      return;
-    }
-
-    const editor = vscode.window.activeTextEditor;
-    if (!editor) {
-      vscode.window.showErrorMessage(
-        localize('extension.noActiveFileMessage', 'No active file to build.')
       );
       return;
     }
@@ -53,8 +54,15 @@ export class BuildManager {
       }
     }
 
-    const workspaceRoot = vscode.workspace.rootPath || '';
-    const relativePath = path.relative(workspaceRoot, editor.document.uri.fsPath);
+    const workspaceRoot = workspaceFolder.uri.fsPath;
+    let relativePath = path.relative(
+      workspaceRoot,
+      editor.document.uri.fsPath
+    );
+    // Ensure forward slashes for build_runner on Windows
+    if (path.sep === "\\") {
+      relativePath = relativePath.replace(/\\/g, "/");
+    }
 
     const command = process.platform === 'win32' ? 'cmd' : 'dart';
     const args =
