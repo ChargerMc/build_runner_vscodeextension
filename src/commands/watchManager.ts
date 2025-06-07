@@ -40,7 +40,8 @@ export class WatchManager {
     if (this.watchProcess) {
       await this.stopWatch();
     } else {
-      if (!isDartProject()) {
+      const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
+      if (!workspaceFolder || !isDartProject(workspaceFolder.uri)) {
         vscode.window.showErrorMessage(
           localize(
             'extension.noDartProjectMessage',
@@ -69,6 +70,7 @@ export class WatchManager {
   }
 
   private async startWatch() {
+    const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
     const command = process.platform === 'win32' ? 'cmd' : 'dart';
     const args =
       process.platform === 'win32'
@@ -78,7 +80,7 @@ export class WatchManager {
     this.outputChannel.clear();
     this.outputChannel.show(true);
 
-    this.watchProcess = spawn(command, args, { cwd: vscode.workspace.rootPath });
+    this.watchProcess = spawn(command, args, { cwd: workspaceFolder?.uri.fsPath });
 
     this.watchProcess.stdout.on('data', (data) => {
       this.outputChannel.append(`[build_runner]: ${data}`);

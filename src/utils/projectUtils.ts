@@ -6,8 +6,12 @@ import * as nls from 'vscode-nls';
 
 const localize = nls.config({ messageFormat: nls.MessageFormat.file })();
 
-export function isDartProject(): boolean {
-  const pubspecPath = path.join(vscode.workspace.rootPath || '', 'pubspec.yaml');
+export function isDartProject(uri?: vscode.Uri): boolean {
+  const folder = uri
+    ? vscode.workspace.getWorkspaceFolder(uri)
+    : vscode.workspace.workspaceFolders?.[0];
+  const rootPath = folder?.uri.fsPath || '';
+  const pubspecPath = path.join(rootPath, 'pubspec.yaml');
   return fs.existsSync(pubspecPath);
 }
 
