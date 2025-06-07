@@ -2,7 +2,7 @@
   "name": "dart-build-runner-watch",
   "displayName": "Dart build_runner watch",
   "description": "VSCode extension to run 'dart run build_runner watch' for Dart projects.",
-  "version": "1.2.0",
+  "version": "1.1.0",
   "publisher": "ChargerDevs",
   "icon": "icon.png",
   "license": "MIT",
