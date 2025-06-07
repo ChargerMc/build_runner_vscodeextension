@@ -55,7 +55,15 @@ export class BuildManager {
     }
 
     const workspaceRoot = workspaceFolder.uri.fsPath;
-    const relativePath = path.relative(workspaceRoot, editor.document.uri.fsPath);
+    let relativePath = path.relative(
+      workspaceRoot,
+      editor.document.uri.fsPath
+    );
+    // Ensure forward slashes for build_runner on Windows
+    if (path.sep === "\\") {
+      relativePath = relativePath.replace(/\\/g, "/");
+    }
+
 
     const command = process.platform === 'win32' ? 'cmd' : 'dart';
     const args =
