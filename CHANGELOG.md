@@ -14,6 +14,7 @@ All notable changes to this extension will be documented in this file.
 
 - The single-file build command now detects `part` directives to include generated targets even if the files are missing.
 - Updated documentation to reflect the new command name and context menu locations.
+- Project structure refactored to follow clean architecture principles.
 
 ## [1.1.0] - 2025-06-06
 
