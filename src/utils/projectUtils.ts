@@ -18,7 +18,10 @@ export function isDartProject(uri?: vscode.Uri): boolean {
 export function getFlutterSdkPath(): Promise<string | null> {
   return new Promise((resolve) => {
     const command = process.platform === 'win32' ? 'cmd' : 'flutter';
-    const args = process.platform === 'win32' ? ['/c', 'flutter', '--version'] : ['--version'];
+    const args =
+      process.platform === 'win32'
+        ? ['/c', 'flutter', '--version']
+        : ['--version'];
 
     const flutterProcess = spawn(command, args);
 
@@ -40,8 +43,22 @@ export function getFlutterSdkPath(): Promise<string | null> {
 
 export async function promptForFlutterSdkPath(): Promise<string | null> {
   const sdkPath = await vscode.window.showInputBox({
-    placeHolder: localize('extension.enterFlutterSdkPath', 'Enter the Flutter SDK path'),
-    prompt: localize('extension.sdkPromptMessage', 'Flutter SDK not found. Please enter its installation path.'),
+    placeHolder: localize(
+      'extension.enterFlutterSdkPath',
+      'Enter the Flutter SDK path'
+    ),
+    prompt: localize(
+      'extension.sdkPromptMessage',
+      'Flutter SDK not found. Please enter its installation path.'
+    ),
   });
   return sdkPath || null;
+}
+
+export function getDartWorkspaceFolders(): vscode.WorkspaceFolder[] {
+  const folders = vscode.workspace.workspaceFolders || [];
+  return folders.filter((folder) => {
+    const pubspecPath = path.join(folder.uri.fsPath, 'pubspec.yaml');
+    return fs.existsSync(pubspecPath);
+  });
 }

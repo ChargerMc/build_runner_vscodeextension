@@ -7,8 +7,13 @@ export function activate(context: vscode.ExtensionContext) {
   const buildManager = new BuildManager(context);
 
   context.subscriptions.push(
-    vscode.commands.registerCommand('extension.toggleWatch', () => watchManager.toggle()),
-    vscode.commands.registerCommand('extension.buildSelected', () => buildManager.buildSelectedFile()),
+    vscode.commands.registerCommand('extension.toggleWatch', () =>
+      watchManager.toggle()
+    ),
+    vscode.commands.registerCommand(
+      'extension.buildSelected',
+      (uri?: vscode.Uri) => buildManager.buildSelectedFile(uri)
+    )
   );
 }
 

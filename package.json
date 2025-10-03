@@ -2,7 +2,7 @@
   "name": "dart-build-runner-watch",
   "displayName": "Dart build_runner watch",
   "description": "VSCode extension to run 'dart run build_runner watch' for Dart projects.",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "publisher": "ChargerDevs",
   "icon": "icon.png",
   "license": "MIT",
@@ -32,7 +32,7 @@
       },
       {
         "command": "extension.buildSelected",
-        "title": "Build Selected File"
+        "title": "%extension.command.buildSelected%"
       }
     ],
     "keybindings": [
@@ -48,7 +48,23 @@
         "mac": "cmd+alt+b",
         "when": "editorTextFocus && resourceLangId == 'dart'"
       }
-    ]
+    ],
+    "menus": {
+      "editor/context": [
+        {
+          "command": "extension.buildSelected",
+          "when": "resourceLangId == 'dart'",
+          "group": "navigation@10"
+        }
+      ],
+      "explorer/context": [
+        {
+          "command": "extension.buildSelected",
+          "when": "resourceExtname == '.dart' && resourceScheme == 'file'",
+          "group": "2_code@20"
+        }
+      ]
+    }
   },
   "scripts": {
     "vscode:prepublish": "tsc -p ./",

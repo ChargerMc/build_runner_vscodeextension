@@ -2,6 +2,19 @@
 
 All notable changes to this extension will be documented in this file.
 
+## [1.2.0] - 2025-10-02
+
+### Added
+
+- Multi-workspace support for `build_runner watch`, allowing independent watchers per workspace folder with automatic cleanup.
+- **Dart Build Runner: Build File** command accessible from the editor and file explorer context menus.
+- Localized command title for the single-file build command (English and Spanish).
+
+### Changed
+
+- The single-file build command now detects `part` directives to include generated targets even if the files are missing.
+- Updated documentation to reflect the new command name and context menu locations.
+
 ## [1.1.0] - 2025-06-06
 
 ### Added

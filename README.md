@@ -10,10 +10,11 @@ A Visual Studio Code extension to run `dart run build_runner watch` for Dart pro
 
 - Start and stop `build_runner watch` with a single button.
 - Start and stop the watcher with **Ctrl+Shift+B** (or **Cmd+Shift+B** on Mac).
+- Multi-workspace ready: run independent watchers per workspace folder with automatic cleanup.
 - Supports localization for English and Spanish.
 - Displays output and error logs in the VS Code output panel.
 - Automatically restarts the watcher if it stops unexpectedly.
-- Rebuild only the active file with **Ctrl+Alt+B** (or **Cmd+Alt+B** on Mac).
+- Build a single file with **Ctrl+Alt+B**/**Cmd+Alt+B** or the **Dart Build Runner: Build File** command available in editor and file explorer context menus.
 
 ## Requirements
 
@@ -30,7 +31,7 @@ A Visual Studio Code extension to run `dart run build_runner watch` for Dart pro
 1. Open a Dart project in VS Code.
 2. Press **Ctrl+Shift+B** (or **Cmd+Shift+B** on Mac) or click the "Watch" button in the status bar to start `build_runner watch`.
 3. Press the same shortcut or click again to stop the watch process.
-4. To rebuild only the currently active file, press **Ctrl+Alt+B** (or **Cmd+Alt+B** on Mac).
+4. To rebuild only the currently active file, press **Ctrl+Alt+B** (or **Cmd+Alt+B** on Mac) or invoke **Dart Build Runner: Build File** from the editor or file explorer context menus.
 
 ## Contributing
 

@@ -21,16 +21,36 @@ export class BuildManager {
     context.subscriptions.push(this.outputChannel);
   }
 
-  public async buildSelectedFile(): Promise<void> {
-    const editor = vscode.window.activeTextEditor;
-    if (!editor) {
+  public async buildSelectedFile(targetUri?: vscode.Uri): Promise<void> {
+    let document: vscode.TextDocument | undefined;
+
+    if (targetUri) {
+      try {
+        document = await vscode.workspace.openTextDocument(targetUri);
+      } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        vscode.window.showErrorMessage(message);
+        return;
+      }
+    } else {
+      document = vscode.window.activeTextEditor?.document;
+    }
+
+    if (!document) {
       vscode.window.showErrorMessage(
         localize('extension.noActiveFileMessage', 'No active file to build.')
       );
       return;
     }
 
-    const workspaceFolder = vscode.workspace.getWorkspaceFolder(editor.document.uri);
+    if (document.languageId !== 'dart') {
+      vscode.window.showErrorMessage(
+        localize('extension.noActiveFileMessage', 'No active file to build.')
+      );
+      return;
+    }
+
+    const workspaceFolder = vscode.workspace.getWorkspaceFolder(document.uri);
     if (!workspaceFolder || !isDartProject(workspaceFolder.uri)) {
       vscode.window.showErrorMessage(
         localize(
@@ -50,72 +70,156 @@ export class BuildManager {
             'extension.flutterSdkRequiredMessage',
             'Flutter SDK is required to run this command.'
           )
-        ); return;
+        );
+        return;
       }
     }
 
     const workspaceRoot = workspaceFolder.uri.fsPath;
-    let relativePath = path.relative(
-      workspaceRoot,
-      editor.document.uri.fsPath
-    );
+    const documentText = document.getText();
+    const documentDir = path.dirname(document.uri.fsPath);
+    let relativePath = path.relative(workspaceRoot, document.uri.fsPath);
 
-    if (path.sep === "\\") {
-      relativePath = relativePath.replace(/\\/g, "/");
+    if (relativePath.startsWith('..')) {
+      vscode.window.showErrorMessage(
+        localize(
+          'extension.noDartProjectMessage',
+          'No Dart project detected in the current directory.'
+        )
+      );
+      return;
+    }
+
+    if (path.sep === '\\') {
+      relativePath = relativePath.replace(/\\/g, '/');
     }
 
     const basePath = relativePath.replace(/\.dart$/, '');
 
-    const potentialBuildFilters = [
-      `${basePath}.g.dart`,           // json_serializable, built_value, etc.
-      `${basePath}.freezed.dart`,     // freezed package
-      `${basePath}.gr.dart`,          // auto_route package
-      `${basePath}.config.dart`,      // injectable package
-      `${basePath}.mocks.dart`,       // mockito package
+    const generatedPartPatterns = [
+      /\.g\.dart$/i,
+      /\.freezed\.dart$/i,
+      /\.gr\.dart$/i,
+      /\.mocks\.dart$/i,
+      /\.config\.dart$/i,
+      /\.mapper\.dart$/i,
+      /\.graphql\.dart$/i,
+      /\.gql\.dart$/i,
+      /\.chopper\.dart$/i,
+      /\.swagger\.dart$/i,
     ];
 
-    const existingFilters: string[] = [];
-    const potentialFilters: string[] = [];
+    const partFilters = new Set<string>();
+    const partRegex = /part\s+['"]([^'"]+)['"];?/g;
+    let match: RegExpExecArray | null;
 
-    for (const filter of potentialBuildFilters) {
+    while ((match = partRegex.exec(documentText)) !== null) {
+      const partPath = match[1];
+      if (!generatedPartPatterns.some((pattern) => pattern.test(partPath))) {
+        continue;
+      }
+
+      const resolvedPartPath = path.resolve(documentDir, partPath);
+      let relativePartPath = path.relative(workspaceRoot, resolvedPartPath);
+      if (relativePartPath.startsWith('..')) {
+        continue;
+      }
+
+      relativePartPath = relativePartPath.split(path.sep).join('/');
+      partFilters.add(relativePartPath);
+    }
+
+    const heuristicSuffixes = [
+      '.g.dart',
+      '.freezed.dart',
+      '.gr.dart',
+      '.config.dart',
+      '.mocks.dart',
+    ];
+
+    const heuristicFilters = new Set<string>();
+    for (const suffix of heuristicSuffixes) {
+      heuristicFilters.add(`${basePath}${suffix}`);
+    }
+
+    const existingFilters = new Set<string>();
+    const missingPartFilters: string[] = [];
+
+    for (const filter of partFilters) {
       const fullPath = path.join(workspaceRoot, filter);
       if (fs.existsSync(fullPath)) {
-        existingFilters.push(filter);
+        existingFilters.add(filter);
       } else {
-        potentialFilters.push(filter);
+        missingPartFilters.push(filter);
       }
     }
 
-    // Use existing files as filters, or all potential ones if none exist yet
-    const buildFilters = existingFilters.length > 0 ? existingFilters : potentialBuildFilters;
+    for (const filter of heuristicFilters) {
+      if (partFilters.has(filter)) {
+        continue;
+      }
+      const fullPath = path.join(workspaceRoot, filter);
+      if (fs.existsSync(fullPath)) {
+        existingFilters.add(filter);
+      }
+    }
 
-    const command = process.platform === 'win32' ? 'cmd' : 'dart';
-    const baseArgs = process.platform === 'win32'
-      ? ['/c', 'dart', 'run', 'build_runner', 'build', '--delete-conflicting-outputs']
-      : ['run', 'build_runner', 'build', '--delete-conflicting-outputs'];
-
-    // Add all build filters
-    const args = [...baseArgs];
-    buildFilters.forEach(filter => {
-      args.push('--build-filter', filter);
-    }); this.outputChannel.clear();
-    this.outputChannel.show(true);
-
-    // Log which file is being processed and what filters are being used
-    this.outputChannel.appendLine(`[build_runner]: Building generated files for: ${relativePath}`);
-    this.outputChannel.appendLine('');
-
-    if (existingFilters.length === 0) {
-      this.outputChannel.appendLine(`[build_runner]: No existing generated files found.`);
-      this.outputChannel.appendLine(`[build_runner]: Exited. No build filters applied.`);
+    if (existingFilters.size === 0 && missingPartFilters.length === 0) {
+      this.outputChannel.clear();
+      this.outputChannel.show(true);
+      this.outputChannel.appendLine(
+        `[build_runner]: No generated file targets found for: ${relativePath}`
+      );
+      this.outputChannel.appendLine(
+        '[build_runner]: Add part directives (e.g. part "*.g.dart";) to enable targeted builds.'
+      );
       return;
     }
 
+    const buildFilters = [...existingFilters, ...missingPartFilters];
+    const uniqueBuildFilters = [...new Set(buildFilters)];
+
+    const command = process.platform === 'win32' ? 'cmd' : 'dart';
+    const baseArgs =
+      process.platform === 'win32'
+        ? [
+            '/c',
+            'dart',
+            'run',
+            'build_runner',
+            'build',
+            '--delete-conflicting-outputs',
+          ]
+        : ['run', 'build_runner', 'build', '--delete-conflicting-outputs'];
+
+    const args = [...baseArgs];
+    uniqueBuildFilters.forEach((filter) => {
+      args.push('--build-filter', filter);
+    });
+
+    this.outputChannel.clear();
+    this.outputChannel.show(true);
+
+    this.outputChannel.appendLine(
+      `[build_runner]: Building generated files for: ${relativePath}`
+    );
+    this.outputChannel.appendLine('');
+
     this.outputChannel.appendLine(`[build_runner]: Using build filters:`);
-    buildFilters.forEach(filter => {
+    uniqueBuildFilters.forEach((filter) => {
       this.outputChannel.appendLine(`  - ${filter}`);
     });
     this.outputChannel.appendLine('');
+
+    if (missingPartFilters.length > 0) {
+      this.outputChannel.appendLine(
+        '[build_runner]: Pending generated files will be created if needed:'
+      );
+      missingPartFilters.forEach((filter) => {
+        this.outputChannel.appendLine(`  • ${filter}`);
+      });
+      this.outputChannel.appendLine('');
+    }
 
     const buildProcess = spawn(command, args, { cwd: workspaceRoot });
 
