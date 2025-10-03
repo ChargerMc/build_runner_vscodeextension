@@ -69,7 +69,8 @@
   "scripts": {
     "vscode:prepublish": "tsc -p ./",
     "compile": "tsc -p ./",
-    "watch": "tsc -watch -p ./"
+    "watch": "tsc -watch -p ./",
+    "build": "vsce package"
   },
   "devDependencies": {
     "@types/node": "^20.17.6",
