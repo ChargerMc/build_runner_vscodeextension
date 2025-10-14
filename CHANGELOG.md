@@ -2,6 +2,19 @@
 
 All notable changes to this extension will be documented in this file.
 
+## [1.3.0] - 2025-10-14
+
+### Added
+
+- **Build Runner Explorer** view in the Explorer sidebar with inline start, stop, and clean actions for each eligible workspace folder.
+- **Dart Build Runner: Clean** command surfaced in the command palette, tree view, and via the `Ctrl+Alt+Shift+B` / `Cmd+Alt+Shift+B` keyboard shortcut.
+- Icon-only toolbar buttons for the Watch Explorer entries so you can toggle watchers and clean caches without leaving the view.
+
+### Changed
+
+- Commands and views now verify that `build_runner` is declared in the workspace `pubspec.yaml` before running, showing localized guidance when the dependency is missing.
+- Watch and clean commands handle explicit folder targets from the Explorer, ensuring consistent multi-root behavior across all entry points.
+
 ## [1.2.0] - 2025-10-02
 
 ### Added

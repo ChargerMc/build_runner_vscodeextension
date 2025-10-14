@@ -2,7 +2,7 @@
   "name": "dart-build-runner-watch",
   "displayName": "Dart build_runner watch",
   "description": "VSCode extension to run 'dart run build_runner watch' for Dart projects.",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "publisher": "ChargerDevs",
   "icon": "icon.png",
   "license": "MIT",
@@ -33,6 +33,33 @@
       {
         "command": "extension.buildSelected",
         "title": "%extension.command.buildSelected%"
+      },
+      {
+        "command": "extension.buildRunnerClean",
+        "title": "%extension.command.cleanBuildRunner%"
+      },
+      {
+        "command": "extension.watch.start",
+        "title": "%extension.command.startWatch%"
+      },
+      {
+        "command": "extension.watch.stop",
+        "title": "%extension.command.stopWatch%"
+      },
+      {
+        "command": "extension.watch.startInline",
+        "title": "%extension.command.startWatch%",
+        "icon": "$(eye)"
+      },
+      {
+        "command": "extension.watch.stopInline",
+        "title": "%extension.command.stopWatch%",
+        "icon": "$(eye-closed)"
+      },
+      {
+        "command": "extension.buildRunnerCleanInline",
+        "title": "%extension.command.cleanBuildRunner%",
+        "icon": "$(trash)"
       }
     ],
     "keybindings": [
@@ -47,6 +74,28 @@
         "key": "ctrl+alt+b",
         "mac": "cmd+alt+b",
         "when": "editorTextFocus && resourceLangId == 'dart'"
+      },
+      {
+        "command": "extension.buildRunnerClean",
+        "key": "ctrl+alt+shift+b",
+        "mac": "cmd+alt+shift+b",
+        "when": "editorTextFocus && resourceLangId == 'dart'"
+      }
+    ],
+    "views": {
+      "explorer": [
+        {
+          "id": "buildRunnerExplorer",
+          "name": "%extension.views.buildRunnerExplorer%",
+          "icon": "icon.png"
+        }
+      ]
+    },
+    "viewsWelcome": [
+      {
+        "view": "buildRunnerExplorer",
+        "contents": "%extension.views.buildRunnerExplorer.welcome%",
+        "when": "!buildRunnerExplorer.hasFolders"
       }
     ],
     "menus": {
@@ -62,6 +111,46 @@
           "command": "extension.buildSelected",
           "when": "resourceExtname == '.dart' && resourceScheme == 'file'",
           "group": "2_code@20"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "extension.watch.startInline",
+          "when": "false"
+        },
+        {
+          "command": "extension.watch.stopInline",
+          "when": "false"
+        },
+        {
+          "command": "extension.buildRunnerCleanInline",
+          "when": "false"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "extension.watch.startInline",
+          "when": "view == buildRunnerExplorer && viewItem == buildRunnerFolderIdle",
+          "group": "inline@1",
+          "tooltip": "%extension.command.startWatch%"
+        },
+        {
+          "command": "extension.watch.stopInline",
+          "when": "view == buildRunnerExplorer && viewItem == buildRunnerFolderWatching",
+          "group": "inline@1",
+          "tooltip": "%extension.command.stopWatch%"
+        },
+        {
+          "command": "extension.buildRunnerCleanInline",
+          "when": "view == buildRunnerExplorer && viewItem == buildRunnerFolderIdle",
+          "group": "inline@2",
+          "tooltip": "%extension.command.cleanBuildRunner%"
+        },
+        {
+          "command": "extension.buildRunnerCleanInline",
+          "when": "view == buildRunnerExplorer && viewItem == buildRunnerFolderWatching",
+          "group": "inline@2",
+          "tooltip": "%extension.command.cleanBuildRunner%"
         }
       ]
     }

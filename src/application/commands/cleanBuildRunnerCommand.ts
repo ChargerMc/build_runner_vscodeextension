@@ -3,24 +3,27 @@ import { WorkspaceFolder } from '../../domain/workspace/workspaceFolder';
 import { FolderPickerService } from '../ports/folderPicker';
 import { FlutterSdkGateway } from '../ports/flutterSdk';
 import { BuildRunnerDetector } from '../ports/buildRunner';
+import { Logger } from '../ports/logger';
 import { MessageService } from '../ports/messageService';
+import { ProcessRunner } from '../ports/processRunner';
 import { WorkspaceGateway } from '../ports/workspace';
-import { WatchService } from '../watch/watchService';
 
 const localize = nls.config({ messageFormat: nls.MessageFormat.file })();
+const CLEAN_ARGS = ['run', 'build_runner', 'clean'];
 
-export class ToggleWatchCommand {
+export class CleanBuildRunnerCommand {
   constructor(
     private readonly workspaceGateway: WorkspaceGateway,
     private readonly folderPicker: FolderPickerService,
     private readonly flutterSdk: FlutterSdkGateway,
     private readonly buildRunnerDetector: BuildRunnerDetector,
+    private readonly logger: Logger,
     private readonly messages: MessageService,
-    private readonly watchService: WatchService
+    private readonly processRunner: ProcessRunner
   ) {}
 
   async execute(target?: unknown): Promise<void> {
-    const { supported: folders, candidates } = await this.getDetectedFolders();
+    const { supported: folders, candidates } = await this.getSupportedFolders();
     const hasCandidates = candidates.length > 0;
     if (folders.length === 0) {
       const messageKey = hasCandidates
@@ -31,7 +34,7 @@ export class ToggleWatchCommand {
           messageKey,
           hasCandidates
             ? 'No build_runner dependency detected. Install build_runner to use this command.'
-            : 'No Dart project detected in the current workspace.'
+            : 'No Dart project detected in the current directory.'
         )
       );
       return;
@@ -66,7 +69,7 @@ export class ToggleWatchCommand {
       return;
     }
 
-    await this.toggleWatchForFolder(targetFolder);
+    await this.cleanFolder(targetFolder);
   }
 
   private async resolveTargetFolder(
@@ -76,21 +79,12 @@ export class ToggleWatchCommand {
       return folders[0];
     }
 
-    const watching = new Set(
-      this.watchService.getActiveSessions().map((session) => session.folder.uri)
-    );
-
     return this.folderPicker.pickWorkspaceFolder(folders, {
-      currentlyWatching: watching,
+      currentlyWatching: new Set<string>(),
     });
   }
 
-  private async toggleWatchForFolder(folder: WorkspaceFolder): Promise<void> {
-    if (this.watchService.isWatching(folder)) {
-      await this.watchService.stop(folder);
-      return;
-    }
-
+  private async cleanFolder(targetFolder: WorkspaceFolder): Promise<void> {
     const sdkPath =
       (await this.flutterSdk.resolveFlutterSdk()) ??
       (await this.flutterSdk.promptForFlutterSdk());
@@ -105,10 +99,88 @@ export class ToggleWatchCommand {
       return;
     }
 
-    await this.watchService.start(folder);
+    this.logger.clear();
+    this.logger.show(true);
+    this.logger.appendLine(
+      `[build_runner:${targetFolder.name}]: cleaning build cache`
+    );
+    this.logger.appendLine('');
+
+    try {
+      const handle = this.processRunner.runDart(CLEAN_ARGS, {
+        cwd: targetFolder.path,
+      });
+
+      handle.onStdout((chunk) => {
+        this.logger.append(`[build_runner:${targetFolder.name}]: ${chunk}`);
+      });
+
+      handle.onStderr((chunk) => {
+        this.logger.append(
+          `[build_runner error:${targetFolder.name}]: ${chunk}`
+        );
+      });
+
+      handle.onExit((code) => {
+        handle.dispose();
+        if (code === 0) {
+          this.messages.showInfo(
+            localize(
+              'extension.cleanSuccessMessage',
+              'Build runner cache cleaned.'
+            )
+          );
+        } else {
+          this.messages.showError(
+            localize(
+              'extension.cleanErrorMessage',
+              'Build runner clean failed with code {0}.',
+              code ?? 'unknown'
+            )
+          );
+        }
+      });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      this.messages.showError(
+        localize(
+          'extension.cleanStartError',
+          'Failed to run build_runner clean: {0}',
+          message
+        )
+      );
+    }
   }
 
-  private async getDetectedFolders(): Promise<{
+  private extractFolderCandidate(
+    target: unknown
+  ): { uri?: string; path?: string } | null {
+    if (!target) {
+      return null;
+    }
+
+    if (typeof target === 'string') {
+      return { uri: target };
+    }
+
+    if (typeof target === 'object') {
+      const maybeFolder = this.extractFolderLike(target);
+      if (maybeFolder) {
+        return maybeFolder;
+      }
+
+      if ('folder' in target) {
+        const nested = (target as { folder?: unknown }).folder;
+        if (nested && typeof nested === 'object') {
+          return this.extractFolderLike(nested);
+        }
+      }
+    }
+
+    return null;
+  }
+
+  private async getSupportedFolders(): Promise<{
     supported: WorkspaceFolder[];
     candidates: WorkspaceFolder[];
   }> {
@@ -194,34 +266,6 @@ export class ToggleWatchCommand {
     }
 
     return false;
-  }
-
-  private extractFolderCandidate(
-    target: unknown
-  ): { uri?: string; path?: string } | null {
-    if (!target) {
-      return null;
-    }
-
-    if (typeof target === 'string') {
-      return { uri: target };
-    }
-
-    if (typeof target === 'object') {
-      const maybeFolder = this.extractFolderLike(target);
-      if (maybeFolder) {
-        return maybeFolder;
-      }
-
-      if ('folder' in target) {
-        const nested = (target as { folder?: unknown }).folder;
-        if (nested && typeof nested === 'object') {
-          return this.extractFolderLike(nested);
-        }
-      }
-    }
-
-    return null;
   }
 
   private extractFolderLike(

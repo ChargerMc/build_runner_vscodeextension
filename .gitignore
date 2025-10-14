@@ -3,4 +3,4 @@ out/
 package-lock.json
 .vscode/
 *.vsix
- 
+ .github/copilot-instructions.md
